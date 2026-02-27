@@ -139,8 +139,7 @@ El HTML generado incluye:
 
 ## Relacionado
 
-- [socratico-skill](https://github.com/sancrisoft/socratico-skill) — Análisis profundo
-- [marketing-site-skills](https://github.com/sancrisoft/marketing-site-skills) — Sitios web completos
+- [socratico-skill](https://github.com/sancrisoft/socratico-skill) — Dependencia opcional para análisis profundo antes del deck
 
 ---
 
