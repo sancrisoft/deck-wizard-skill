@@ -280,7 +280,44 @@ El deck generado debe incluir:
 
     <script>
         // Navegación completa: keyboard, click, touch, botones
-        // Función exportToPdf() con html2canvas + jspdf
+
+        // PDF Export - IMPORTANTE: usar JPEG con compresión para PDFs livianos
+        async function exportToPdf() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('landscape', 'px', [window.innerWidth, window.innerHeight]);
+
+            const nav = document.querySelector('.navigation');
+            const prog = document.querySelector('.progress-bar');
+            nav.style.display = 'none';
+            prog.style.display = 'none';
+            document.body.classList.add('exporting');
+
+            for (let i = 0; i < totalSlides; i++) {
+                showSlide(i);
+                await new Promise(r => setTimeout(r, 150));
+
+                const canvas = await html2canvas(slides[i], {
+                    scale: 1.5,        // 1.5 es suficiente para buena calidad (NO usar 2+)
+                    useCORS: true,
+                    backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg-primary').trim() || '#0f172a',
+                    logging: false,
+                    removeContainer: true
+                });
+
+                // CRÍTICO: usar JPEG con calidad 0.85 en lugar de PNG
+                // PNG sin comprimir = ~20MB por slide, JPEG 0.85 = ~500KB por slide
+                const imgData = canvas.toDataURL('image/jpeg', 0.85);
+                if (i > 0) pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, 0, window.innerWidth, window.innerHeight);
+            }
+
+            document.body.classList.remove('exporting');
+            nav.style.display = 'flex';
+            prog.style.display = 'block';
+            showSlide(0);
+
+            pdf.save('{FILENAME}.pdf');
+        }
     </script>
 </body>
 </html>
