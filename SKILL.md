@@ -248,8 +248,6 @@ El deck generado debe incluir:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{TITULO}</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* Variables de color según branding */
@@ -259,7 +257,33 @@ El deck generado debe incluir:
             --accent: {ACCENT_COLOR};
             --accent-secondary: {ACCENT2_COLOR};
         }
-        /* ... estilos completos ... */
+
+        /* ... estilos de slides, tipografía, componentes ... */
+
+        /* CRÍTICO: Print styles para PDF con links y texto copiable */
+        @media print {
+            @page { size: landscape; margin: 0; }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            html, body { background: var(--bg-primary) !important; }
+            .navigation, .progress-bar { display: none !important; }
+            .slide {
+                display: flex !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                page-break-after: always;
+                break-after: page;
+                animation: none !important;
+            }
+            .slide:last-of-type { page-break-after: auto; }
+            /* Fallback para títulos con gradient */
+            .slide.cover h1 {
+                background: none !important;
+                -webkit-text-fill-color: var(--accent) !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -281,42 +305,26 @@ El deck generado debe incluir:
     <script>
         // Navegación completa: keyboard, click, touch, botones
 
-        // PDF Export - IMPORTANTE: usar JPEG con compresión para PDFs livianos
-        async function exportToPdf() {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('landscape', 'px', [window.innerWidth, window.innerHeight]);
+        // PDF Export - usa print nativo para preservar links y texto copiable
+        function exportToPdf() {
+            // Mostrar todas las slides para print
+            slides.forEach(slide => {
+                slide.style.display = 'flex';
+                slide.classList.remove('active');
+            });
 
-            const nav = document.querySelector('.navigation');
-            const prog = document.querySelector('.progress-bar');
-            nav.style.display = 'none';
-            prog.style.display = 'none';
-            document.body.classList.add('exporting');
+            // Abrir diálogo de impresión (guardar como PDF)
+            window.print();
 
-            for (let i = 0; i < totalSlides; i++) {
-                showSlide(i);
-                await new Promise(r => setTimeout(r, 150));
-
-                const canvas = await html2canvas(slides[i], {
-                    scale: 1.5,        // 1.5 es suficiente para buena calidad (NO usar 2+)
-                    useCORS: true,
-                    backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg-primary').trim() || '#0f172a',
-                    logging: false,
-                    removeContainer: true
+            // Restaurar vista de presentación después de imprimir
+            setTimeout(() => {
+                slides.forEach((slide, i) => {
+                    slide.style.display = '';
+                    if (i === currentSlide) {
+                        slide.classList.add('active');
+                    }
                 });
-
-                // CRÍTICO: usar JPEG con calidad 0.85 en lugar de PNG
-                // PNG sin comprimir = ~20MB por slide, JPEG 0.85 = ~500KB por slide
-                const imgData = canvas.toDataURL('image/jpeg', 0.85);
-                if (i > 0) pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', 0, 0, window.innerWidth, window.innerHeight);
-            }
-
-            document.body.classList.remove('exporting');
-            nav.style.display = 'flex';
-            prog.style.display = 'block';
-            showSlide(0);
-
-            pdf.save('{FILENAME}.pdf');
+            }, 500);
         }
     </script>
 </body>
