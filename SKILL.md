@@ -262,20 +262,33 @@ El deck generado debe incluir:
 
         /* CRÍTICO: Print styles para PDF con links y texto copiable */
         @media print {
-            @page { size: landscape; margin: 0; }
+            @page { size: 13.333in 7.5in; margin: 0; }  /* 16:9 widescreen */
             * {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
+                color-adjust: exact !important;
             }
-            html, body { background: var(--bg-primary) !important; }
+            html, body {
+                width: 13.333in;
+                height: 7.5in;
+                margin: 0;
+                padding: 0;
+                background: var(--bg-primary) !important;
+            }
             .navigation, .progress-bar { display: none !important; }
             .slide {
                 display: flex !important;
-                width: 100vw !important;
-                height: 100vh !important;
+                flex-direction: column;
+                justify-content: center;
+                width: 13.333in !important;
+                height: 7.5in !important;
+                min-height: 7.5in !important;
+                max-height: 7.5in !important;
+                padding: 0.4in 0.6in !important;
                 page-break-after: always;
                 break-after: page;
                 animation: none !important;
+                overflow: hidden;
             }
             .slide:last-of-type { page-break-after: auto; }
             /* Fallback para títulos con gradient */
@@ -283,6 +296,22 @@ El deck generado debe incluir:
                 background: none !important;
                 -webkit-text-fill-color: var(--accent) !important;
             }
+            /* Escalar contenido para 16:9 */
+            h2 { font-size: 2.2rem !important; margin-bottom: 24px !important; }
+            h3 { font-size: 1.4rem !important; margin-bottom: 16px !important; }
+            p { font-size: 1.1rem !important; line-height: 1.5 !important; }
+            .quote { font-size: 1.5rem !important; padding: 24px !important; margin: 20px auto !important; }
+            .bullet-list { font-size: 1.1rem !important; }
+            .bullet-list li { padding: 10px 0 !important; }
+            .stats-grid { gap: 20px !important; }
+            .stat-card { padding: 24px !important; }
+            .stat-card .number { font-size: 2.5rem !important; }
+            .process-steps { gap: 16px !important; }
+            .step { padding: 20px !important; }
+            .pitch-cards { gap: 16px !important; }
+            .pitch-card { padding: 20px !important; }
+            .comparison-table { font-size: 1rem !important; }
+            .comparison-table th, .comparison-table td { padding: 12px !important; }
         }
     </style>
 </head>
