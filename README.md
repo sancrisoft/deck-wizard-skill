@@ -78,26 +78,24 @@ mi-presentacion/
 ### Opcional (recomendada)
 - **Skill socrático** — para análisis profundo antes del deck
 
-```bash
-gh repo clone sancrisoft/socratico-skill
-cd socratico-skill && ./install.sh
-```
-
 ## Instalación
 
-```bash
-# Clonar el repo
-gh repo clone sancrisoft/deck-wizard-skill
-cd deck-wizard-skill
+Install from the sancrisoft-plugins marketplace:
 
-# Instalar
-./install.sh
+```bash
+claude plugin install deck-wizard --marketplace sancrisoft-plugins
 ```
 
-O manual:
+If you are not using Claude Code, you can install with:
+
 ```bash
-mkdir -p ~/.claude/skills/deck-wizard
-cp SKILL.md ~/.claude/skills/deck-wizard/
+npx skills add https://github.com/sancrisoft/deck-wizard-skill
+```
+
+## Desinstalación
+
+```bash
+claude plugin uninstall deck-wizard
 ```
 
 ## Ejemplos de Output
