@@ -8,7 +8,7 @@ Wizard interactivo para crear presentaciones HTML profesionales con Claude Code.
 - **Múltiples fuentes de contenido** — explicación directa, documentos, o análisis socrático
 - **Branding personalizable** — extrae colores de URLs o define manualmente
 - **Iteración integrada** — ajusta slides hasta que queden perfectas
-- **Export PDF** — botón integrado en el HTML usando html2canvas + jspdf
+- **Export PDF** — botón integrado en el HTML usando print nativo (preserva links y texto copiable)
 - **Persistencia** — guarda estado para retomar sesiones
 
 ## Uso
