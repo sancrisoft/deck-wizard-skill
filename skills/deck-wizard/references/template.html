@@ -6,7 +6,7 @@
     <title>{TITULO}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Variables de color segun branding */
+        /* Variables de color según branding */
         :root {
             --bg-primary: {BG_COLOR};
             --text-primary: {TEXT_COLOR};
@@ -14,7 +14,7 @@
             --accent-secondary: {ACCENT2_COLOR};
         }
 
-        /* ... estilos de slides, tipografia, componentes ... */
+        /* ... estilos de slides, tipografía, componentes ... */
 
         /* Print styles para PDF — preserva links clickeables y texto copiable */
         @media print {
@@ -47,7 +47,7 @@
                 overflow: hidden;
             }
             .slide:last-of-type { page-break-after: auto; }
-            /* Fallback para titulos con gradient */
+            /* Fallback para títulos con gradient */
             .slide.cover h1 {
                 background: none !important;
                 -webkit-text-fill-color: var(--accent) !important;
@@ -76,7 +76,7 @@
     <div class="slide active">...</div>
     <div class="slide">...</div>
 
-    <!-- Navegacion -->
+    <!-- Navegación -->
     <div class="navigation">
         <button onclick="changeSlide(-1)">&larr; Anterior</button>
         <span id="counter">1 / N</span>
@@ -88,7 +88,7 @@
     <div class="progress-bar"><div id="progress"></div></div>
 
     <script>
-        // Navegacion completa: keyboard, click, touch, botones
+        // Navegación completa: keyboard, click, touch, botones
 
         // PDF Export - usa print nativo para preservar links y texto copiable
         function exportToPdf() {
@@ -98,10 +98,10 @@
                 slide.classList.remove('active');
             });
 
-            // Abrir dialogo de impresion (guardar como PDF)
+            // Abrir diálogo de impresión (guardar como PDF)
             window.print();
 
-            // Restaurar vista de presentacion despues de imprimir
+            // Restaurar vista de presentación después de imprimir
             setTimeout(() => {
                 slides.forEach((slide, i) => {
                     slide.style.display = '';
