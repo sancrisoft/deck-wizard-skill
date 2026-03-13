@@ -1,6 +1,6 @@
 {
   "name": "deck-wizard",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Interactive wizard for creating professional HTML presentations with PDF export. Wizard interactivo para crear presentaciones HTML profesionales con exportación a PDF.",
   "author": {
     "name": "Sancrisoft"
