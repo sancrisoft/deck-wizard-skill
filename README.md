@@ -80,16 +80,16 @@ mi-presentacion/
 
 ## Instalación
 
-Install from the sancrisoft-plugins marketplace:
+Install from the sancrisoft/plugins marketplace:
 
 ```bash
-claude plugin install deck-wizard --marketplace sancrisoft-plugins
+claude plugin install deck-wizard --marketplace sancrisoft/plugins
 ```
 
-If you are not using Claude Code, you can install with:
+Or install directly from the repository:
 
 ```bash
-npx skills add https://github.com/sancrisoft/deck-wizard-skill
+claude plugin install --git https://github.com/sancrisoft/deck-wizard-skill
 ```
 
 ## Desinstalación
