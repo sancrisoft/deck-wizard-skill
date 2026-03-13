@@ -83,13 +83,7 @@ mi-presentacion/
 Inside Claude Code, run:
 
 ```
-/plugin install deck-wizard --marketplace sancrisoft/plugins
-```
-
-Or install directly from the repository:
-
-```
-/plugin install --git https://github.com/sancrisoft/deck-wizard-skill
+/plugin install deck-wizard@sancrisoft/plugins
 ```
 
 ## Desinstalación
