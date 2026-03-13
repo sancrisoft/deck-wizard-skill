@@ -1,19 +1,16 @@
-# deck-wizard
-
-Wizard interactivo para crear presentaciones HTML profesionales con exportación a PDF.
-
-<trigger-examples>
-- /deck-wizard
-- /deck
-- crear presentación
-- generar deck
-- hacer slides
-- presentación HTML
-</trigger-examples>
-
 ---
-
-<command-name>deck-wizard</command-name>
+name: deck-wizard
+description: "Wizard interactivo para crear presentaciones HTML profesionales con exportación a PDF. Usa este skill cuando el usuario quiera crear un deck, presentación, slides, o pitch deck. También cuando pida generar una presentación desde un documento, análisis, o contenido existente. Aplica para frases como: 'crear presentación', 'hacer slides', 'generar deck', 'quiero un pitch deck', 'presentación HTML', 'convertir esto en slides', 'armar un deck con esto', o cualquier solicitud relacionada con crear, editar, o continuar una presentación visual."
+compatibility:
+  requires:
+    - AskUserQuestion
+    - Write
+    - Read
+    - Bash
+    - Glob
+  optional:
+    - WebFetch
+---
 
 ## Instrucciones
 
@@ -48,20 +45,19 @@ Usa AskUserQuestion con estas opciones:
 ```
 
 **Si elige [C]:**
-- Verifica si el skill `socrático` está disponible (busca en `~/.claude/skills/socratico/`)
+- Verifica si el skill `socrático` está disponible (busca en los skills instalados del usuario)
 - Si existe: Pregunta el tema y ejecuta el análisis socrático inline
-- Si no existe: Muestra instrucciones de instalación:
+- Si no existe: Sugiere instalarlo:
   ```
-  El skill socrático no está instalado. Para instalarlo:
+  El skill socrático no está instalado. Puedes instalarlo desde el marketplace:
 
-  gh repo clone sancrisoft/socratico-skill
-  cd socratico-skill && ./install.sh
+  claude plugin install socratico-skill --marketplace sancrisoft-plugins
 
   Luego vuelve a ejecutar /deck-wizard
   ```
 
 **Si elige [D]:**
-- Busca carpetas con `deck-project.json` en `~/Documents/decks/` o directorio actual
+- Busca carpetas con `deck-project.json` en el directorio actual y subdirectorios
 - Lista los proyectos encontrados para que elija
 
 ---
@@ -150,9 +146,9 @@ Pregunta con AskUserQuestion:
 
 1. Pregunta: "¿Nombre para el proyecto? (ej: analisis-estrategico-2026)"
 
-2. Crea la carpeta del proyecto:
+2. Pregunta dónde guardar el proyecto. Por defecto usa el directorio actual:
    ```
-   ~/Documents/decks/{nombre-proyecto}/
+   {nombre-proyecto}/
    ├── deck-project.json   # Estado del wizard
    └── assets/             # Para imágenes si las hay
    ```
@@ -185,18 +181,18 @@ Pregunta con AskUserQuestion:
    ¿Este outline está bien o quieres ajustar algo?
    ```
 
-2. **Genera el HTML completo** usando el template base con:
-   - Navegación: flechas, keyboard (←→), touch (swipe), click
+2. **Genera el HTML completo** usando como referencia el template en `references/template.html`. El HTML debe incluir:
+   - Navegación: flechas, keyboard (izquierda/derecha), touch (swipe), click
    - Contador de slides (1/N)
    - Barra de progreso
-   - Botón "Export PDF" con html2canvas + jspdf
-   - Los scripts CDN necesarios
+   - Botón "Export PDF" que usa `window.print()` nativo (preserva links clickeables y texto copiable)
+   - Print styles con @media print para formato 16:9
 
 3. **Guarda como `DECK.html`** en la carpeta del proyecto
 
 4. **Ofrece abrir en browser:**
    ```bash
-   open ~/Documents/decks/{nombre}/DECK.html
+   open {ruta-proyecto}/DECK.html
    ```
 
 5. **Loop de iteración:**
@@ -221,15 +217,15 @@ Pregunta con AskUserQuestion:
 
 2. Muestra resumen:
    ```
-   ✓ Deck completado
+   Deck completado
 
    Archivos:
-   - ~/Documents/decks/{nombre}/DECK.html
-   - ~/Documents/decks/{nombre}/deck-project.json
+   - {ruta-proyecto}/DECK.html
+   - {ruta-proyecto}/deck-project.json
 
    Para exportar a PDF:
    1. Abre el HTML en Chrome
-   2. Click en "Export PDF"
+   2. Click en "Export PDF" (usa print nativo — Save as PDF)
 
    Para editar después:
    - Ejecuta /deck-wizard y elige "Continuar un deck en progreso"
@@ -237,135 +233,22 @@ Pregunta con AskUserQuestion:
 
 ---
 
-## Template HTML Base
+## Template HTML
 
-El deck generado debe incluir:
+Lee `references/template.html` para ver la estructura base del HTML generado. El template incluye:
+- Variables CSS para branding dinámico
+- Print styles @media print con formato 16:9 widescreen (13.333in x 7.5in)
+- Navegación completa (keyboard, touch, click, botones)
+- Función exportToPdf() que usa `window.print()` nativo
 
-```html
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{TITULO}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        /* Variables de color según branding */
-        :root {
-            --bg-primary: {BG_COLOR};
-            --text-primary: {TEXT_COLOR};
-            --accent: {ACCENT_COLOR};
-            --accent-secondary: {ACCENT2_COLOR};
-        }
-
-        /* ... estilos de slides, tipografía, componentes ... */
-
-        /* CRÍTICO: Print styles para PDF con links y texto copiable */
-        @media print {
-            @page { size: 13.333in 7.5in; margin: 0; }  /* 16:9 widescreen */
-            * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                color-adjust: exact !important;
-            }
-            html, body {
-                width: 13.333in;
-                height: 7.5in;
-                margin: 0;
-                padding: 0;
-                background: var(--bg-primary) !important;
-            }
-            .navigation, .progress-bar { display: none !important; }
-            .slide {
-                display: flex !important;
-                flex-direction: column;
-                justify-content: center;
-                width: 13.333in !important;
-                height: 7.5in !important;
-                min-height: 7.5in !important;
-                max-height: 7.5in !important;
-                padding: 0.4in 0.6in !important;
-                page-break-after: always;
-                break-after: page;
-                animation: none !important;
-                overflow: hidden;
-            }
-            .slide:last-of-type { page-break-after: auto; }
-            /* Fallback para títulos con gradient */
-            .slide.cover h1 {
-                background: none !important;
-                -webkit-text-fill-color: var(--accent) !important;
-            }
-            /* Escalar contenido para 16:9 */
-            h2 { font-size: 2.2rem !important; margin-bottom: 24px !important; }
-            h3 { font-size: 1.4rem !important; margin-bottom: 16px !important; }
-            p { font-size: 1.1rem !important; line-height: 1.5 !important; }
-            .quote { font-size: 1.5rem !important; padding: 24px !important; margin: 20px auto !important; }
-            .bullet-list { font-size: 1.1rem !important; }
-            .bullet-list li { padding: 10px 0 !important; }
-            .stats-grid { gap: 20px !important; }
-            .stat-card { padding: 24px !important; }
-            .stat-card .number { font-size: 2.5rem !important; }
-            .process-steps { gap: 16px !important; }
-            .step { padding: 20px !important; }
-            .pitch-cards { gap: 16px !important; }
-            .pitch-card { padding: 20px !important; }
-            .comparison-table { font-size: 1rem !important; }
-            .comparison-table th, .comparison-table td { padding: 12px !important; }
-        }
-    </style>
-</head>
-<body>
-    <!-- Slides -->
-    <div class="slide active">...</div>
-    <div class="slide">...</div>
-
-    <!-- Navegación -->
-    <div class="navigation">
-        <button onclick="changeSlide(-1)">← Anterior</button>
-        <span id="counter">1 / N</span>
-        <button class="pdf-btn" onclick="exportToPdf()">Export PDF</button>
-        <button onclick="changeSlide(1)">Siguiente →</button>
-    </div>
-
-    <!-- Progress bar -->
-    <div class="progress-bar"><div id="progress"></div></div>
-
-    <script>
-        // Navegación completa: keyboard, click, touch, botones
-
-        // PDF Export - usa print nativo para preservar links y texto copiable
-        function exportToPdf() {
-            // Mostrar todas las slides para print
-            slides.forEach(slide => {
-                slide.style.display = 'flex';
-                slide.classList.remove('active');
-            });
-
-            // Abrir diálogo de impresión (guardar como PDF)
-            window.print();
-
-            // Restaurar vista de presentación después de imprimir
-            setTimeout(() => {
-                slides.forEach((slide, i) => {
-                    slide.style.display = '';
-                    if (i === currentSlide) {
-                        slide.classList.add('active');
-                    }
-                });
-            }, 500);
-        }
-    </script>
-</body>
-</html>
-```
+Adapta el template al contenido y branding del usuario. Los estilos de slides, tipografía, y componentes visuales (stat cards, grids, quotes, etc.) se generan según el tipo de presentación elegido en Fase 3.
 
 ---
 
-## Notas Importantes
+## Notas de diseño
 
-1. **Siempre usa AskUserQuestion** para las opciones — no asumas
-2. **Confirma cada fase** antes de avanzar
-3. **El loop de iteración es clave** — los decks casi nunca quedan bien al primer intento
-4. **Guarda estado** para poder retomar sesiones
-5. **El skill socrático es dependencia opcional** — funciona sin él pero es mejor con él
+- **Usa AskUserQuestion para las opciones** en lugar de asumir — el usuario conoce su audiencia y contexto mejor que nadie, y elegir activamente aumenta la satisfacción con el resultado final.
+- **Confirma cada fase antes de avanzar** — corregir temprano es mucho más rápido que rehacer un deck completo.
+- **El loop de iteración es fundamental** — las presentaciones rara vez quedan perfectas al primer intento, y pequeños ajustes hacen una gran diferencia en el impacto visual.
+- **Guarda estado en deck-project.json** — permite retomar sesiones interrumpidas sin perder progreso.
+- **El skill socrático es dependencia opcional** — el wizard funciona completo sin él, pero el análisis socrático ayuda a estructurar ideas cuando el usuario no tiene claro el contenido.
